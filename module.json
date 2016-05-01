@@ -1,6 +1,6 @@
 {
   "name": "mcp230xx",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "MCP230xx I2C GPIO expander library",
   "keywords": [
     "GPIO",

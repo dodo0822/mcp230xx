@@ -8,9 +8,14 @@ using namespace std;
 class MCP23008 {
 public:
 	MCP23008(I2C &_i2c, uint8_t _address = 0x40) : i2c(_i2c), address(_address) {
-		gpio = vector<uint8_t>(1, 0);
-		iodir = vector<uint8_t>(1, 0);
-		gppu = vector<uint8_t>(1, 0);
+		gpio = 0x00;
+		iodir = 0xFF;
+		gppu = 0x00;
+
+		char data[2];
+		data[0] = 0x05;
+		data[1] = 0x20;
+		i2c.write(address, data, 2);
 
 		write_iodir();
 		write_gppu();
@@ -34,9 +39,9 @@ private:
 	I2C &i2c;
 	uint8_t address;
 
-	vector<uint8_t> gpio;
-	vector<uint8_t> iodir;
-	vector<uint8_t> gppu;
+	uint8_t gpio;
+	uint8_t iodir;
+	uint8_t gppu;
 
 	void write_gpio();
 	void write_iodir();

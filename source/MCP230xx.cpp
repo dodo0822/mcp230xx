@@ -10,87 +10,83 @@ void MCP23008::setup(uint8_t pin, bool type) {
 	if(pin >= 8) return;
 
 	if(type == IN) {
-		iodir[0] |= 1 << pin;
+		iodir |= 1 << pin;
 	} else {
-		iodir[0] &= ~(1 << pin);
+		iodir &= ~(1 << pin);
 	}
 
 	write_iodir();
+	wait_ms(5);
 }
 
 void MCP23008::output(uint8_t pin, bool value) {
 	if(pin >= 8) return;
 
 	if(value == HIGH) {
-		gpio[0] |= 1 << pin;
+		gpio |= 1 << pin;
 	} else {
-		gpio[0] &= ~(1 << pin);
+		gpio &= ~(1 << pin);
 	}
 
 	write_gpio();
+	wait_ms(5);
 }
 
 bool MCP23008::input(uint8_t pin) {
-	if(pin >= 8) false;
+	if(pin >= 8) return false;
 
 	uint8_t states = read_gpio(0x09);
+	wait_ms(5);
 
-	return (((states & 1) << pin) > 0);
+	return states & (1 << pin);
 }
 
 void MCP23008::pullup(uint8_t pin, bool en) {
 	if(pin >= 8) return;
 
 	if(en) {
-		gppu[0] |= 1 << pin;
+		gppu |= 1 << pin;
 	} else {
-		gppu[0] &= ~(1 << pin);
+		gppu &= ~(1 << pin);
 	}
 
 	write_gppu();
+	wait_ms(5);
 }
 
 void MCP23008::write_gpio() {
 	char buf[2];
-	for(unsigned i = 0; i < gpio.size(); ++i) {
-		buf[0] = (0x09 + i);
-		buf[1] = gpio[i];
-		i2c.write(address, buf, sizeof(buf), false);
-	}
+	buf[0] = 0x09;
+	buf[1] = gpio;
+	i2c.write(address, buf, sizeof(buf), false);
 
 	return;
 }
 
 void MCP23008::write_iodir() {
 	char buf[2];
-	for(int i = 0; i < iodir.size(); ++i) {
-		buf[0] = (0x00 + i);
-		buf[1] = iodir[i];
-		i2c.write(address, buf, sizeof(buf), false);
-	}
+	buf[0] = 0x00;
+	buf[1] = iodir;
+	i2c.write(address, buf, sizeof(buf), false);
 
 	return;
 }
 
 void MCP23008::write_gppu() {
 	char buf[2];
-	for(int i = 0; i < gppu.size(); ++i) {
-		buf[0] = (0x06 + i);
-		buf[1] = gppu[i];
-		i2c.write(address, buf, sizeof(buf), false);
-	}
+	buf[0] = 0x06;
+	buf[1] = gppu;
+	i2c.write(address, buf, sizeof(buf), false);
 
 	return;
 }
 
 uint8_t MCP23008::read_gpio(uint8_t reg) {
-	char cmd[1];
-	cmd[0] = reg;
+	char cmd = reg;
+	char result;
 
-	char result[1];
+	i2c.write(address, &cmd, 1);
+	i2c.read(address, &result, 1);
 
-	i2c.write(address, cmd, 1, true);
-	i2c.read(address, result, 1);
-
-	return result[0];
+	return result;
 }
