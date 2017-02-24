@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 
 #include "mcp230xx/MCP230xx.h"
 

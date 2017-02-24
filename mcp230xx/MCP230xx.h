@@ -1,6 +1,6 @@
 #pragma once
 
-#include "mbed-drivers/mbed.h"
+#include "mbed.h"
 #include <vector>
 
 using namespace std;
